@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: mongo-node-<env>-<num>
-          image: mongo
+          image: mongo:3.3
           command:
             - mongod
             - "--replSet"
