@@ -13,17 +13,17 @@
 kind: ReplicationController
 apiVersion: v1
 metadata:
-  name: mongo-<num>
+  name: mongo-<env>-<num>
 spec:
   replicas: 1
   selector:
-    name: mongo-node-<num>
+    name: mongo-node-<env>-<num>
     role: mongo
-    environment: test
+    environment: <env>
   template:
     spec:
       containers:
-        - name: mongo-node-<num>
+        - name: mongo-node-<env>-<num>
           image: mongo
           command:
             - mongod
@@ -40,14 +40,14 @@ spec:
           image: leportlabs/mongo-k8s-sidecar
           env:
             - name: MONGO_SIDECAR_POD_LABELS
-              value: "role=mongo,environment=test"
+              value: "role=mongo,environment=<env>"
       volumes:
         - name: mongo-persistent-storage
           gcePersistentDisk:
-            pdName: mongo-persistent-storage-node-<num>-disk
+            pdName: mongo-persistent-storage-node-<env>-<num>-disk
             fsType: ext4
     metadata:
       labels:
-        name: mongo-node-<num>
+        name: mongo-node-<env>-<num>
         role: mongo
-        environment: test
+        environment: <env>

@@ -7,6 +7,11 @@
      - ```DISK_SIZE``` (i.e 500GB, 1TB)
      - ```ZONE``` (i.e us-central1-f)
      - ```ENV``` (i.e GoogleCloudPlatform)
+     - ```ENVIRONEMENT``` (i.e test)
 - Delete a replica
    - ```make delete-replica```
+   - Options:
+     - ```ZONE``` (i.e us-central1-f)
+     - ```ENV``` (i.e GoogleCloudPlatform)
+     - ```ENVIRONEMENT``` (i.e test)
    - This will delete the last replica that was added
