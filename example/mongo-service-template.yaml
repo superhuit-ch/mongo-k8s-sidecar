@@ -16,6 +16,7 @@ metadata:
   labels:
     name: mongo-<env>-<num>
     environment: <env>
+    namespace: <nspace>
   name: mongo-<env>-<num>
 spec:
   ports:

@@ -1,4 +1,4 @@
-#	Copyright 2016, Google, Inc.
+# Copyright 2016, Google, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -35,8 +35,9 @@ spec:
             - "--noprealloc"
           ports:
             - containerPort: 27017
+              hostPort: 4000
           volumeMounts:
-            - name: mongo-persistent-storage
+            - name: mongo-glusterfs-storage-<env>-<num>
               mountPath: /data/db
         - name: mongo-sidecar
           image: leportlabs/mongo-k8s-sidecar
@@ -44,12 +45,15 @@ spec:
             - name: MONGO_SIDECAR_POD_LABELS
               value: "role=mongo,environment=<env>"
       volumes:
-        - name: mongo-persistent-storage
-          gcePersistentDisk:
-            pdName: mongo-persistent-storage-node-<env>-<num>-disk
-            fsType: ext4
+        - name: mongo-glusterfs-storage-<env>-<num>
+          glusterfs:
+            endpoints: "glusterfs-cluster-1"
+            path: "mongo-<env>-<num>"
+            readOnly: false
     metadata:
       labels:
         name: mongo-node-<env>-<num>
         role: mongo
         environment: <env>
+        namespace: <nspace>
+        version: "<dbver>"
