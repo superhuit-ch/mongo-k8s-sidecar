@@ -21,12 +21,13 @@ ENVIRONMENT=test
 
 # NAMESPACE (default, production, etc.)
 NAMESPACE=test
+CREATE_NAMESPACE=true
 
 # MONGODB VERSION which docker image to use.
 DBVERSION=3.3
 
 # FIND REPLICAS
-NUM_REPLICAS=$(shell kubectl get rc -l role=mongo,environment=$(ENVIRONMENT),namespace=$(NAMESPACE) -o template --template='{{ len .items }}')
+NUM_REPLICAS=$(shell kubectl get rc --namespace=$(NAMESPACE) -l role=mongo,environment=$(ENVIRONMENT) -o template --template='{{ len .items }}')
 NEW_REPLICA_NUM=$(shell expr $(NUM_REPLICAS) + 1 )
 
 # Create GCE PD disks ?
@@ -51,6 +52,11 @@ endif
 
 ########## ADD A REPLICA
 add-replica:
+## NAMESPACE
+ifeq ($(CREATE_NAMESPACE),true)
+	@echo 'Creating namespace: $(NAMESPACE)'
+	-sed -e 's/<nspace>/$(NAMESPACE)/g' create-namespace.yaml | kubectl create -f -
+endif
 ## GCE
 ifeq ($(ENV),GoogleCloudPlatform)
 ifeq ($(CREATE_DISK),true)
@@ -90,16 +96,16 @@ endif
 ########## DELETE REPLICA
 delete-replica:
 	@echo 'Deleting Service on environment: $(ENVIRONMENT) and namespace: $(NAMESPACE)'
-	-kubectl delete svc mongo-$(ENVIRONMENT)-$(NUM_REPLICAS)
+	-kubectl delete svc mongo-$(ENVIRONMENT)-$(NUM_REPLICAS) --namespace=$(NAMESPACE)
 ifeq ($(ENV),GlusterFS)
 	@echo 'Deleting Replic on environment: $(ENVIRONMENT) and namespace: $(NAMESPACE)'
-	-kubectl delete rc mongo-$(ENVIRONMENT)-$(NUM_REPLICAS)
+	-kubectl delete rc mongo-$(ENVIRONMENT)-$(NUM_REPLICAS) --namespace=$(NAMESPACE)
 endif
 ifeq ($(ENV),GoogleCloudPlatform)
 	@echo 'Deleting Replic on environment: $(ENVIRONMENT) and namespace: $(NAMESPACE)'
-	-kubectl delete rc mongo-$(ENVIRONMENT)-$(NUM_REPLICAS)
+	-kubectl delete rc mongo-$(ENVIRONMENT)-$(NUM_REPLICAS) --namespace=$(NAMESPACE)
 ifeq ($(DELETE_DISK),true)
-	@echo 'Deleting Disk on environment: $(ENVIRONMENT) and namespace: $(NAMESPACE)'
+	@echo 'Deleting Disk on environment: $(ENVIRONMENT)'
 	sleep 60
 	-yes | gcloud compute disks delete mongo-persistent-storage-node-$(ENVIRONMENT)-$(NUM_REPLICAS)-disk --zone $(ZONE)
 endif

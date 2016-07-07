@@ -14,6 +14,7 @@ kind: ReplicationController
 apiVersion: v1
 metadata:
   name: mongo-<env>-<num>
+  namespace: <nspace>
 spec:
   replicas: 1
   selector:
