@@ -13,6 +13,14 @@ https://github.com/leportlabs/mongo-k8s-sidecar
 
 There you will also find some helper scripts to test out creating the replica set and resizing it.
 
+## Authentication
+If this is your first setup, please remove the "--auth" from the apropriated mongo-controller yaml template
+at ./example/mongo-controller-xxxxx-template.yaml
+
+To add authentication simply follow the MongoDB documentation to create a new admin user and then restore the "--auth"
+option here. You'll be then able to delete your replicas and add them back.
+(!) This method to enable authentication requires that you have a persistent storage attached to the DB (!)
+
 ### Settings
 
 - MONGO_SIDECAR_POD_LABELS  
